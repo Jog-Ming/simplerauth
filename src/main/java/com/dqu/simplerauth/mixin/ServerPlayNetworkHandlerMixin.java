@@ -2,7 +2,6 @@ package com.dqu.simplerauth.mixin;
 
 import com.dqu.simplerauth.listeners.OnClickSlot;
 import com.dqu.simplerauth.listeners.OnGameMessage;
-import com.dqu.simplerauth.listeners.OnCommandExecution;
 import com.dqu.simplerauth.listeners.OnPlayerAction;
 import com.dqu.simplerauth.listeners.OnPlayerMove;
 import net.minecraft.item.ItemStack;
@@ -61,13 +60,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onChatMessage", at = @At("HEAD"), cancellable = true)
     public void onChatMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {
         if (!OnGameMessage.canSendMessage(this.player, packet.getChatMessage())) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "onCommandExecution", at = @At("HEAD"), cancellable = true)
-    public void onCommandExecution(CommandExecutionC2SPacket packet, CallbackInfo ci) {
-        if (!OnCommandExecution.canSendCommand(this.player, packet.command())) {
             ci.cancel();
         }
     }

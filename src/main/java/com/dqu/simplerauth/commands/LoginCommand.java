@@ -24,7 +24,7 @@ public class LoginCommand {
         dispatcher.register(literal("login")
             .then(argument("password", StringArgumentType.word())
                     .executes(ctx -> {
-                        String username = ctx.getSource().getPlayerOrThrow().getEntityName();
+                        String username = ctx.getSource().getPlayer().getEntityName();
                         if (!DbManager.getTwoFactorEnabled(username) && !ConfigManager.getAuthType().equals("2fa")) {
                             return login(ctx);
                         } else if (DbManager.getUseOnlineAuth(username) || ConfigManager.getAuthType().equals("2fa")) return loginCode(ctx);
@@ -32,7 +32,7 @@ public class LoginCommand {
                         return 0;
                     })
                     .then(argument("code", StringArgumentType.word()).executes(ctx -> {
-                        String username = ctx.getSource().getPlayerOrThrow().getEntityName();
+                        String username = ctx.getSource().getPlayer().getEntityName();
                         String code = StringArgumentType.getString(ctx, "code");
                         if (!DbManager.getTwoFactorEnabled(username)) {
                             return login(ctx);
@@ -45,7 +45,7 @@ public class LoginCommand {
 
     private static int loginCode(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         String code = StringArgumentType.getString(ctx, "password");
-        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
         if (TwoFactorManager.validate(player, code)) {
             PlayerObject playerObject = AuthMod.playerManager.get(player);
             PlayerAuthEvents.PLAYER_LOGIN.invoker().onPlayerLogin(player, "loginCommand");
@@ -60,16 +60,16 @@ public class LoginCommand {
     }
 
     private static int login(CommandContext<ServerCommandSource> ctx, String pin) throws CommandSyntaxException {
-        if (TwoFactorManager.validate(ctx.getSource().getPlayerOrThrow(), pin)) {
+        if (TwoFactorManager.validate(ctx.getSource().getPlayer(), pin)) {
             return login(ctx);
         } else {
-            if (ConfigManager.getAuthType().equals("2fa")) ctx.getSource().getPlayerOrThrow().networkHandler.disconnect(LangManager.getLiteralText("command.general.2fa.incorrect"));
+            if (ConfigManager.getAuthType().equals("2fa")) ctx.getSource().getPlayer().networkHandler.disconnect(LangManager.getLiteralText("command.general.2fa.incorrect"));
             throw new SimpleCommandExceptionType(LangManager.getLiteralText("command.general.2fa.incorrect")).create();
         }
     }
 
     private static int login(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
         PlayerObject playerObject = AuthMod.playerManager.get(player);
 
         if (playerObject.isAuthenticated()) {

@@ -20,25 +20,26 @@ public class ChangePasswordCommand {
                     .executes(ctx -> {
                         String oldPassword = StringArgumentType.getString(ctx, "oldPassword");
                         String newPassword = StringArgumentType.getString(ctx, "newPassword");
-                        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+                        ServerPlayerEntity player = ctx.getSource().getPlayer();
                         String username = player.getEntityName();
                         String authtype = ConfigManager.getAuthType();
 
-                        if (authtype.equals("2fa")) {
-                            return 0;
-                        }
-
-                        if (authtype.equals("global")) {
-                            if (player.hasPermissionLevel(4)) {
-                                // If a player is an operator, and the password type is global - change the global password
-                                String password = ConfigManager.getString("global-password");
-                                if (password.equals(oldPassword)) {
-                                    ConfigManager.setString("global-password", newPassword);
-                                }
+                        switch (authtype) {
+                            case "2fa" -> {
+                                return 0;
                             }
-                            return 1;
-                        } else if (authtype.equals("none")) {
-                            player.networkHandler.disconnect(LangManager.getLiteralText("config.incorrect"));
+                            case "global" -> {
+                                if (player.hasPermissionLevel(4)) {
+                                    // If a player is an operator, and the password type is global - change the global password
+                                    String password = ConfigManager.getString("global-password");
+                                    if (password.equals(oldPassword)) {
+                                        ConfigManager.setString("global-password", newPassword);
+                                    }
+                                }
+                                return 1;
+                            }
+                            case "none" ->
+                                    player.networkHandler.disconnect(LangManager.getLiteralText("config.incorrect"));
                         }
 
                         if (!DbManager.isPlayerRegistered(username)) {

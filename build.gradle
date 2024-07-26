@@ -1,11 +1,14 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.7-SNAPSHOT'
 	id 'maven-publish'
 }
 
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = JavaVersion.VERSION_17
+//noinspection GroovyUnusedAssignment
 targetCompatibility = JavaVersion.VERSION_17
 
+//noinspection GroovyUnusedAssignment
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
@@ -78,7 +81,8 @@ publishing {
 		}
 	}
 	publications {
-		gpr(MavenPublication) {
+		//noinspection GroovyAssignabilityCheck
+        gpr(MavenPublication) {
 			from components.java
 		}
 	}

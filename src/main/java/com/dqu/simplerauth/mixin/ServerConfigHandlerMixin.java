@@ -7,10 +7,10 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.util.StringHelper;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,7 +39,7 @@ public class ServerConfigHandlerMixin {
                 boolean onlinePlayer = forcedOnlineAuth ? AuthMod.doesMinecraftAccountExist(player) : DbManager.getUseOnlineAuth(player);
                 if (onlinePlayer) onlineBannedPlayers.add(player);
                 else {
-                    UUID uuid = DynamicSerializableUuid.getOfflinePlayerUuid(player);
+                    UUID uuid = PlayerEntity.getOfflinePlayerUuid(player);
                     GameProfile profile = new GameProfile(uuid, player);
                     callback.onProfileLookupSucceeded(profile);
                 }

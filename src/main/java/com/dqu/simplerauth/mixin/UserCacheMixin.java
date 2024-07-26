@@ -18,12 +18,11 @@ public abstract class UserCacheMixin {
     }
 
     // Without this, there might be issues with offline players
-    /** @noinspection UnresolvedMixinReference */
     @SuppressWarnings("target")
-    @Redirect(method = {
-            "method_14509(Lcom/mojang/authlib/GameProfileRepository;Ljava/lang/String;)Lcom/mojang/authlib/GameProfile;",
-            "method_14509(Lcom/mojang/authlib/GameProfileRepository;Ljava/lang/String;)Ljava/util/Optional;"
-    }, at = @At(value = "INVOKE", target = "Lnet/minecraft/util/UserCache;shouldUseRemote()Z"))
+    @Redirect(
+            method = "findProfileByName(Lcom/mojang/authlib/GameProfileRepository;Ljava/lang/String;)Ljava/util/Optional;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/UserCache;shouldUseRemote()Z")
+    )
     private static boolean useOnlineUuid(GameProfileRepository repository, String name) {
         boolean forcedOnlineAuth = ConfigManager.getBoolean("forced-online-auth");
         boolean optionalOnlineAuth = ConfigManager.getBoolean("optional-online-auth");
